@@ -3,91 +3,90 @@ import html
 
 class TextPreprocessor:
     def __init__(self):
-        # Список скорочень для Sentence Splitter
         self.ua_abbreviations = [
             'ім.', 'вул.', 'грн.', 'обл.', 'р.', 'див.', 'п.', 'с.', 'м.', 
             'т.д.', 'т.п.', 'напр.', 'важ.', 'кг.', 'шт.', 'гр.'
         ]
         
-        # Словник для нормалізації
+        # Гомогліфи
         self.cyrillic_map = {
-            # Маленькі
             'a': 'а', 'e': 'е', 'o': 'о', 'p': 'р', 'x': 'х', 'c': 'с', 'i': 'і', 'y': 'у',
-            # Великі
             'A': 'А', 'E': 'Е', 'O': 'О', 'P': 'Р', 'X': 'Х', 'C': 'С', 'I': 'І', 'H': 'Н', 'M': 'М', 'T': 'Т'
         }
 
-    def clean_text(self, text: str) -> str:
-        """Базова очистка від технічного сміття."""
+    def clean_basic(self, text: str) -> str:
+        """Початкова очистка."""
         if not text: return ""
-        
-        # Декодування HTML сутностей (&#39; -> ', &quot; -> " тощо)
         text = html.unescape(text)
-        
-        # Видалення специфічних фраз
-        text = re.sub(r"(?i)розгорнутим|розгорнути|згорнути|читати далі|відповідь", " ", text)
-        
-        # Видалення невидимих символів та зайвих пробілів/переносів
+
+        # Видалення технічних слів
+        text = re.sub(r"(?i)\b(розгорнути|згорнути|читати далі|відповідь|розгорнутим)\b", " ", text)
         text = re.sub(r"\s+", " ", text)
-        
         return text.strip()
 
-    def normalize_text(self, text: str) -> str:
-        # Уніфікація апострофів
-        text = re.sub(r"[`'’‘]", "'", text)
-        
-        # Заміна символів
-        translation_table = str.maketrans(self.cyrillic_map)
-        text = text.translate(translation_table)
-        
-        return text
-
     def mask_pii(self, text: str) -> str:
-        """Маскування конфіденційних даних."""
+        """Маскування URL, Email, Телефонів та ID замовлень."""
         # URL
-        text = re.sub(r"https?://\S+|www\.\S+", "<URL>", text)
+        url_pattern = r'https?://\S+|www\.\S+|\b[a-z0-9.-]+\.(?:com|ua|net|org|edu|gov)\b(?:\/\S*)?'
+        text = re.sub(url_pattern, "<URL>", text)
 
         # Email
         text = re.sub(r"\S+@\S+", "<EMAIL>", text)
 
-        # Номери телефонів
-        text = re.sub(r"(\+?38)?\s?\(?\d{3}\)?[\s\.-]?\d{3}[\s\.-]?\d{2}[\s\.-]?\d{2}", "<PHONE>", text)
+        # Номери замовлень (наприклад, № 123456 або замовлення 12345)
+        text = re.sub(r"(?i)(?:№|замовлення|номер|код)\s*#?\d{5,}", "<ID>", text)
+
+        # Телефони
+        phone_pattern = r"(\+?38)?\s?\(?\d{3}\)?[\s\.-]?\d{3}[\s\.-]?\d{2}[\s\.-]?\d{2}"
+        text = re.sub(phone_pattern, "<PHONE>", text)
         
         return text
 
-    def sentence_split(self, text: str) -> list[str]:
-        """Розбиття на речення з урахуванням скорочень."""
-        if not text: return []
+    def normalize_content(self, text: str) -> str:
+        """Робота з текстом: апострофи, пробіли, Caps Lock, гомогліфи."""
+        # Уніфікація апострофів
+        text = re.sub(r"[`'’‘]", "'", text)
         
-        # Знаходимо всі потенційні місця розриву (крапка + пробіл + Велика літера)
-        def split_checker(match):
-            full_match = match.group(0) # наприклад ". Т"
-            part_before = text[:match.start()]
-            
-            # Перевіряємо, чи закінчується текст перед крапкою на якесь із скорочень
-            if any(part_before.lower().endswith(abb.lower()[:-1]) for abb in self.ua_abbreviations):
-                return full_match
-            
-            return full_match.replace(" ", "<SPLIT>")
+        # Стиснення знаків оклику та крапок (!!! -> !!, ... -> ..)
+        # Для тональності залишаємо 2 символи як сигнал посилення
+        text = re.sub(r"!{2,}", "!!", text)
+        text = re.sub(r"\?{2,}", "??", text)
+        text = re.sub(r"\.{4,}", "...", text)
 
-        # Шукаємо крапку/знак оклику/питання, пробіл і Велику літеру (кириличну або латинську)
-        pattern = r"[.!?]\s+(?=[А-ЯІЇЄҐA-Z])"
-        temp_text = re.sub(pattern, split_checker, text)
+        # Додавання пробілів після скорочень та перед одиницями виміру
+        text = re.sub(r"(?<=\d)(грн|usd|eur|%|шт)\b", r" \1", text, flags=re.I)
+        text = re.sub(r"\b(м|вул|кв)\.(?=[А-ЯІЇЄҐ])", r"\1. ", text)
+
+        # Виправлення гомогліфів
+        translation_table = str.maketrans(self.cyrillic_map)
+        text = text.translate(translation_table)
+
+        # Робота з Caps Lock: якщо слово > 2 символів і повністю в верхньому регістрі
+        def lower_caps(match):
+            word = match.group(0)
+            return word.lower() if len(word) > 2 else word
         
-        # Ріжемо по нашому тегу
-        sentences = temp_text.split("<SPLIT>")
-        
-        return [s.strip() for s in sentences if s.strip()]
+        text = re.sub(r"\b[А-ЯІЇЄҐA-Z]{3,}\b", lower_caps, text)
+
+        return text
+
+    def sentence_split(self, text: str) -> list[str]:
+        """Спліттер."""
+        # Паттерн: знак завершення + пробіл + Велика літера
+        pattern = r"(?<!\bім)(?<!\bвул)(?<!\bгрн)(?<!\bобл)(?<!\bстор)(?<=[.!?])\s+(?=[А-ЯІЇЄҐA-Z])"
+        sentences = re.split(pattern, text)
+        return [s.strip() for s in sentences if len(s.strip()) > 1]
 
     def preprocess(self, text: str) -> dict:
-        cleaned = self.clean_text(text)
-        normalized = self.normalize_text(cleaned)
-        masked = self.mask_pii(normalized)
-        sentences = self.sentence_split(masked)
+        t = self.clean_basic(text)      
+        t = self.mask_pii(t)           
+        t = self.normalize_content(t)  
+        
+        sentences = self.sentence_split(t)
         
         return {
             "original": text,
-            "clean_normalized": masked,
+            "clean_normalized": t,
             "sentences": sentences,
             "sentence_count": len(sentences)
         }
