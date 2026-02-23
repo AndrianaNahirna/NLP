@@ -20,37 +20,8 @@ class TextPreprocessor:
         text = re.sub(r"(?i)\b(розгорнути|згорнути|читати далі|відповідь|розгорнутим)\b", " ", text)
         return text.strip()
 
-    def normalize_content(self, text: str) -> str:
-        """Крок 1: Обробка символів до того, як з'являться технічні теги."""
-        # Уніфікація гомогліфів (важливо зробити ДО вставки <URL> чи <PHONE>)
-        translation_table = str.maketrans(self.cyrillic_map)
-        text = text.translate(translation_table)
-
-        # Апострофи
-        text = re.sub(r"[`'’‘]", "'", text)
-        
-        # Caps Lock: приводимо до нижнього регістру слова від 2-х літер
-        # Але ігноруємо слова з цифрами (артикули типу QE55Q)
-        def lower_caps(match):
-            word = match.group(0)
-            if any(char.isdigit() for char in word): return word
-            return word.lower()
-        
-        text = re.sub(r"\b[А-ЯІЇЄҐA-Z]{2,}\b", lower_caps, text)
-
-        # Пунктуація (залишаємо максимум 2 знаки для емоції)
-        text = re.sub(r"!{2,}", "!!", text)
-        text = re.sub(r"\?{2,}", "??", text)
-        text = re.sub(r"\.{4,}", "...", text)
-
-        # Пробіли після скорочень та перед валютами
-        text = re.sub(r"\b(м|вул|кв|просп|бул)\.(?=[А-ЯІЇЄҐA-Z])", r"\1. ", text)
-        text = re.sub(r"(\d+)\s*(грн|usd|eur|%|шт|тб|gb|tb|кг|₴|\$)\b", r"\1 \2", text, flags=re.I)
-
-        return text
-
     def mask_pii(self, text: str) -> str:
-        """Крок 2: Маскування даних з примусовими пробілами."""
+        """Крок 1: Маскування даних (виконується ПЕРЕД нормалізацією, поки латиниця ще ціла)"""
         # URL
         url_pattern = r'https?://\S+|www\.\S+|\b[a-z0-9.-]+\.(?:com|ua|net|org|edu|gov|io)\b(?:\/\S*)?'
         text = re.sub(url_pattern, " <URL> ", text)
@@ -58,21 +29,62 @@ class TextPreprocessor:
         # Email
         text = re.sub(r"\S+@\S+", " <EMAIL> ", text)
 
-        # ID / Замовлення (маскуємо будь-які послідовності 5+ цифр, щоб захопити списки)
-        text = re.sub(r"(?i)(?:№+|код|замовлення|номер)?\s*#?\d{5,15}", " <ID> ", text)
+        # ID / Замовлення (спочатку ловимо контекст зі списками, потім поодинокі довгі цифри)
+        text = re.sub(r"(?i)(?:№+|код|замовлення|номер)\s*#?[\d\s,]{4,}\d", " <ID> ", text)
+        text = re.sub(r"\b\d{5,15}\b", " <ID> ", text)
         
         # Телефони
         phone_pattern = r"(\+?38)?\s?\(?\d{3}\)?[\s\.-]?\d{3}[\s\.-]?\d{2}[\s\.-]?\d{2}"
         text = re.sub(phone_pattern, " <PHONE> ", text)
         
         # Видаляємо дублікати тегів (якщо було кілька номерів через кому)
-        text = re.sub(r"(<ID>\s*)+", "<ID> ", text)
+        text = re.sub(r"(<ID>\s*[,/]*\s*)+", "<ID> ", text)
         
-        # Чистимо зайві пробіли
+        # Чистимо зайві пробіли, щоб уникнути злипання
         text = re.sub(r"\s+", " ", text)
         return text.strip()
 
+    def normalize_content(self, text: str) -> str:
+        """Крок 2: Нормалізація із ЗАХИСТОМ технічних тегів."""
+        # Розбиваємо текст так, щоб теги <URL>, <EMAIL> тощо були окремими елементами
+        parts = re.split(r"(<[A-Z]+>)", text)
+        translation_table = str.maketrans(self.cyrillic_map)
+        
+        for i in range(len(parts)):
+            # Якщо це НЕ тег, тоді нормалізуємо
+            if not re.match(r"<[A-Z]+>", parts[i]):
+                part = parts[i]
+                
+                # 1. Гомогліфи
+                part = part.translate(translation_table)
+
+                # 2. Апострофи
+                part = re.sub(r"[`'’‘]", "'", part)
+                
+                # 3. Caps Lock
+                def lower_caps(match):
+                    word = match.group(0)
+                    if any(char.isdigit() for char in word): return word
+                    return word.lower()
+                
+                part = re.sub(r"\b[А-ЯІЇЄҐA-Z]{2,}\b", lower_caps, part)
+
+                # 4. Пунктуація
+                part = re.sub(r"!{2,}", "!!", part)
+                part = re.sub(r"\?{2,}", "??", part)
+                part = re.sub(r"\.{4,}", "...", part)
+
+                # 5. Пробіли
+                part = re.sub(r"\b(м|вул|кв|просп|бул)\.(?=[А-ЯІЇЄҐа-яіїєґA-Za-z])", r"\1. ", part)
+                part = re.sub(r"(\d+)\s*(грн|usd|eur|%|шт|тб|gb|tb|кг|₴|\$)\b", r"\1 \2", part, flags=re.I)
+                
+                parts[i] = part
+                
+        # Збираємо текст назад
+        return "".join(parts)
+
     def sentence_split(self, text: str) -> list[str]:
+        # Тут бібліотека regex розкриває свою силу: Look-behind змінної довжини
         abbs_pattern = "|".join([re.escape(a.replace('.', '')) for a in self.ua_abbreviations])
         pattern = rf"(?<!\b(?:{abbs_pattern}))(?<=[.!?])\s+(?=[А-ЯІЇЄҐA-Z])"
         
@@ -80,10 +92,11 @@ class TextPreprocessor:
         return [s.strip() for s in sentences if len(s.strip()) > 1]
 
     def preprocess(self, text: str) -> dict:
-        # Зміна порядку: нормалізація ПЕРЕД маскуванням
         t = self.clean_basic(text)
-        t = self.normalize_content(t) 
-        t = self.mask_pii(t)
+        
+        # ПРАВИЛЬНИЙ ПОРЯДОК:
+        t = self.mask_pii(t)           # Спочатку знаходимо URL/Email (поки англійська "чиста")
+        t = self.normalize_content(t)  # Потім нормалізуємо решту, обходячи теги
         
         sentences = self.sentence_split(t)
         
