@@ -72,6 +72,7 @@ class TextPreprocessor:
                 part = re.sub(r"\b[А-ЯІЇЄҐA-Z]{2,}\b", lower_caps, part)
 
                 # Пунктуація
+                part = re.sub(r"\s+([.,!?])", r"\1", part)
                 part = re.sub(r"!{2,}", "!!", part)
                 part = re.sub(r"\?{2,}", "??", part)
                 part = re.sub(r"\.{4,}", "...", part)
@@ -79,7 +80,6 @@ class TextPreprocessor:
                 # Пробіли
                 part = re.sub(r"\b(м|вул|кв|просп|бул)\.(?=[А-ЯІЇЄҐа-яіїєґA-Za-z])", r"\1. ", part)
                 part = re.sub(r"(\d+)\s*(грн|usd|eur|%|шт|тб|gb|tb|кг|₴|\$)\b", lambda m: f"{m.group(1)} {m.group(2).lower()}", part, flags=re.I)
-                part = re.sub(r"\s+([.,!?])", r"\1", part)
                 
                 parts[i] = part
                 
