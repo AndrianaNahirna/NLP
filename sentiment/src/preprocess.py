@@ -3,15 +3,13 @@ import html
 
 class TextPreprocessor:
     def __init__(self):
-        # 1. Список скорочень для Sentence Splitter як звичайний Python list
-        # Це дозволить уникнути помилки "look-behind requires fixed-width pattern"
+        # Список скорочень для Sentence Splitter
         self.ua_abbreviations = [
             'ім.', 'вул.', 'грн.', 'обл.', 'р.', 'див.', 'п.', 'с.', 'м.', 
             'т.д.', 'т.п.', 'напр.', 'важ.', 'кг.', 'шт.', 'гр.'
         ]
         
-        # 2. Розширений словник для нормалізації (кирилиця vs латиниця)
-        # Додаємо великі літери та популярні помилкові символи
+        # Словник для нормалізації
         self.cyrillic_map = {
             # Маленькі
             'a': 'а', 'e': 'е', 'o': 'о', 'p': 'р', 'x': 'х', 'c': 'с', 'i': 'і', 'y': 'у',
@@ -23,13 +21,13 @@ class TextPreprocessor:
         """Базова очистка від технічного сміття."""
         if not text: return ""
         
-        # 1. Декодування HTML сутностей (&#39; -> ', &quot; -> " тощо)
+        # Декодування HTML сутностей (&#39; -> ', &quot; -> " тощо)
         text = html.unescape(text)
         
-        # 2. Видалення специфічних фраз маркетплейсів (з вашої dataset_card)
+        # Видалення специфічних фраз
         text = re.sub(r"(?i)розгорнутим|розгорнути|згорнути|читати далі|відповідь", " ", text)
         
-        # 3. Видалення невидимих символів та зайвих пробілів/переносів
+        # Видалення невидимих символів та зайвих пробілів/переносів
         text = re.sub(r"\s+", " ", text)
         
         return text.strip()
@@ -38,7 +36,7 @@ class TextPreprocessor:
         # Уніфікація апострофів
         text = re.sub(r"[`'’‘]", "'", text)
         
-        # Масова заміна символів
+        # Заміна символів
         translation_table = str.maketrans(self.cyrillic_map)
         text = text.translate(translation_table)
         
@@ -48,34 +46,27 @@ class TextPreprocessor:
         """Маскування конфіденційних даних."""
         # URL
         text = re.sub(r"https?://\S+|www\.\S+", "<URL>", text)
+
         # Email
         text = re.sub(r"\S+@\S+", "<EMAIL>", text)
-        # Номери телефонів (різні формати)
+
+        # Номери телефонів
         text = re.sub(r"(\+?38)?\s?\(?\d{3}\)?[\s\.-]?\d{3}[\s\.-]?\d{2}[\s\.-]?\d{2}", "<PHONE>", text)
         
         return text
 
     def sentence_split(self, text: str) -> list[str]:
-        """Розбиття на речення з урахуванням скорочень (fixed version)."""
+        """Розбиття на речення з урахуванням скорочень."""
         if not text: return []
         
-        # Використовуємо простіший підхід: 
-        # Шукаємо крапку, знак оклику або питання, за якими йде пробіл і велика літера.
-        # Але за допомогою Regex замінюємо пробіл на спеціальний тег <SPLIT>, 
-        # ТІЛЬКИ якщо перед ним НЕ стоїть наше скорочення.
-        
-        # 1. Створюємо список скорочень для перевірки
-        abbs = ['ім.', 'вул.', 'грн.', 'обл.', 'р.', 'див.', 'п.', 'с.', 'м.', 'т.д.', 'т.п.', 'напр.']
-        
-        # 2. Знаходимо всі потенційні місця розриву (крапка + пробіл + Велика літера)
-        # Використовуємо функцію-заміну для перевірки умов
+        # Знаходимо всі потенційні місця розриву (крапка + пробіл + Велика літера)
         def split_checker(match):
             full_match = match.group(0) # наприклад ". Т"
             part_before = text[:match.start()]
             
             # Перевіряємо, чи закінчується текст перед крапкою на якесь із скорочень
-            if any(part_before.lower().endswith(abb.lower()[:-1]) for abb in abbs):
-                return full_match # Повертаємо як є, без тегу розриву
+            if any(part_before.lower().endswith(abb.lower()[:-1]) for abb in self.ua_abbreviations):
+                return full_match
             
             return full_match.replace(" ", "<SPLIT>")
 
@@ -83,13 +74,12 @@ class TextPreprocessor:
         pattern = r"[.!?]\s+(?=[А-ЯІЇЄҐA-Z])"
         temp_text = re.sub(pattern, split_checker, text)
         
-        # 3. Ріжемо по нашому тегу
+        # Ріжемо по нашому тегу
         sentences = temp_text.split("<SPLIT>")
         
         return [s.strip() for s in sentences if s.strip()]
 
     def preprocess(self, text: str) -> dict:
-        """Повний пайплайн."""
         cleaned = self.clean_text(text)
         normalized = self.normalize_text(cleaned)
         masked = self.mask_pii(normalized)
