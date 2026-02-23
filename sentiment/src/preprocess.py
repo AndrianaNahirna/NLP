@@ -78,7 +78,7 @@ class TextPreprocessor:
 
                 # Пробіли
                 part = re.sub(r"\b(м|вул|кв|просп|бул)\.(?=[А-ЯІЇЄҐа-яіїєґA-Za-z])", r"\1. ", part)
-                part = re.sub(r"(\d+)\s*(грн|usd|eur|%|шт|тб|gb|tb|кг|₴|\$)\b", r"\1 \2", part, flags=re.I)
+                part = re.sub(r"(\d+)\s*(грн|usd|eur|%|шт|тб|gb|tb|кг|₴|\$)\b", lambda m: f"{m.group(1)} {m.group(2).lower()}", part, flags=re.I)
                 part = re.sub(r"\s+([.,!?])", r"\1", part)
                 
                 parts[i] = part
