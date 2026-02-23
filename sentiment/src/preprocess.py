@@ -21,63 +21,45 @@ class TextPreprocessor:
         text = re.sub(r"(?i)\b(розгорнути|згорнути|читати далі|відповідь|розгорнутим)\b", " ", text)
         return text.strip()
 
+    def normalize_content(self, text: str) -> str:
+        # 1. СЕРЙОЗНА ПРАВКА: Спочатку гомогліфи, ПОКИ НЕМАЄ ТЕГІВ
+        translation_table = str.maketrans(self.cyrillic_map)
+        text = text.translate(translation_table)
+
+        # 2. Уніфікація апострофів
+        text = re.sub(r"[`'’‘]", "'", text)
+
+        # 3. Caps Lock (тепер працює надійно)
+        def lower_caps(match):
+            word = match.group(0)
+            # Якщо це артикул (суміш цифр і літер як QE55Q), не чіпаємо
+            if any(char.isdigit() for char in word): return word
+            return word.lower()
+        
+        # Замінюємо всі слова від 2-х літер в верхньому регістрі
+        text = re.sub(r"\b[А-ЯІЇЄҐA-Z]{2,}\b", lower_caps, text)
+
+        # 4. Пробіли навколо скорочень
+        text = re.sub(r"\b(м|вул|кв)\.(?=[А-ЯІЇЄҐA-Z])", r"\1. ", text)
+        text = re.sub(r"(\d+)\s*(грн|%|шт)", r"\1 \2", text, flags=re.I)
+
+        return text
+
     def mask_pii(self, text: str) -> str:
-        """Маскування конфіденційних даних з пробілами, щоб уникнути злипання."""
-        # URL & Domains
-        url_pattern = r'https?://\S+|www\.\S+|\b[a-z0-9.-]+\.(?:com|ua|net|org|edu|gov|io)\b(?:\/\S*)?'
+        # Додаємо пробіли при заміні, щоб теги не злипалися
+        url_pattern = r'https?://\S+|www\.\S+|\b[a-z0-9.-]+\.(?:com|ua|net|org)\b(?:\/\S*)?'
         text = re.sub(url_pattern, " <URL> ", text)
 
-        # Email
-        text = re.sub(r"\S+@\S+", " <EMAIL> ", text)
+        # Маскуємо БУДЬ-ЯКІ довгі цифри (це зазвичай ID або замовлення)
+        text = re.sub(r"\b\d{5,12}\b", " <ID> ", text)
+        
+        # Прибираємо дублікати тегів (якщо було кілька номерів підряд)
+        text = re.sub(r"(<ID>\s*)+", "<ID> ", text)
 
-        # Номери замовлень (ID) - шукаємо № або код і довгі послідовності цифр
-        # Додано підтримку №№ та переліку номерів
-        text = re.sub(r"(?i)(?:№+|код|замовлення|номер)\s*#?[\d\s,]{4,}\d", " <ID> ", text)
-
-        # Телефони
         phone_pattern = r"(\+?38)?\s?\(?\d{3}\)?[\s\.-]?\d{3}[\s\.-]?\d{2}[\s\.-]?\d{2}"
         text = re.sub(phone_pattern, " <PHONE> ", text)
         
-        return text
-
-    def normalize_content(self, text: str) -> str:
-        # 1. Уніфікація апострофів
-        text = re.sub(r"[`'’‘]", "'", text)
-        
-        # 2. Стиснення пунктуації (залишаємо 2 для інтенсивності)
-        text = re.sub(r"!{2,}", "!!", text)
-        text = re.sub(r"\?{2,}", "??", text)
-        text = re.sub(r"\.{4,}", "...", text)
-
-        # 3. Пробіли: число + валюта/одиниця
-        text = re.sub(r"(\d+)\s*(грн|usd|eur|%|шт|тб|gb|tb|кг)\b", r"\1 \2", text, flags=re.I)
-        
-        # 4. Пробіли після скорочень (м.Київ -> м. Київ)
-        text = re.sub(r"\b(м|вул|кв|просп|бул)\.(?=[А-ЯІЇЄҐA-Z])", r"\1. ", text)
-
-        # 5. Caps Lock: переводимо в нижній регістр слова довжиною > 2
-        def lower_caps(match):
-            word = match.group(0)
-            # Не чіпаємо теги <URL>, <PHONE> тощо
-            if word in ["URL", "PHONE", "EMAIL", "ID"]: return word
-            return word.lower()
-        
-        text = re.sub(r"\b[А-ЯІЇЄҐA-Z]{3,}\b", lower_caps, text)
-
-        # 6. Виправлення гомогліфів (ОБЕРЕЖНО: не чіпаємо латиницю в тегах)
-        # Розбиваємо текст по тегах, нормалізуємо тільки "м'ясо" тексту
-        parts = re.split(r"(<[A-Z]+>)", text)
-        translation_table = str.maketrans(self.cyrillic_map)
-        
-        for i in range(len(parts)):
-            if not re.match(r"<[A-Z]+>", parts[i]):
-                parts[i] = parts[i].translate(translation_table)
-        
-        text = "".join(parts)
-        
-        # Фінальне чищення пробілів
-        text = re.sub(r"\s+", " ", text)
-        return text.strip()
+        return re.sub(r"\s+", " ", text).strip()
 
     def sentence_split(self, text: str) -> list[str]:
         # Використовуємо Negative Lookbehind для списку скорочень
