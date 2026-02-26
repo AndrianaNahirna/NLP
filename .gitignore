@@ -1,6 +1,7 @@
 tmp/
 sentiment/data/processed_v1
 sentiment/data/processed_v2
+sentiment/data/processed_v3
 sentiment/data/raw
 sentiment/notebooks/__pycache__
 sentiment/src/__pycache__
