@@ -1,0 +1,30 @@
+{"id": 1, "raw_text": "Оновив додаток до версії 2.0.12, працює краще", "field_type": "DATE", "expected_behavior": "Не вважати номер версії ПЗ датою"}
+{"id": 2, "raw_text": "Модель телефону 10.12 дуже стара", "field_type": "DATE", "expected_behavior": "Неповна дата (без року) не повинна витягуватись"}
+{"id": 3, "raw_text": "Спробував ввести 32.01.2023", "field_type": "DATE", "expected_behavior": "Ігнорувати неіснуючі дні (більше 31)"}
+{"id": 4, "raw_text": "Помилка в базі: 15.13.2020", "field_type": "DATE", "expected_behavior": "Ігнорувати неіснуючі місяці (більше 12)"}
+{"id": 5, "raw_text": "Дата покупки 00.05.2019", "field_type": "DATE", "expected_behavior": "Нульовий день не є валідним, ігнорувати"}
+{"id": 6, "raw_text": "Отримав 12.04.16 на пошті", "field_type": "DATE", "expected_behavior": "Правильно додати століття до двозначного року (2016)"}
+{"id": 7, "raw_text": "Замовляв 5 Січня 2024", "field_type": "DATE", "expected_behavior": "Розпізнати текстовий місяць незалежно від регістру"}
+{"id": 8, "raw_text": "Приїде 1.2.2023", "field_type": "DATE", "expected_behavior": "Розпізнати дату без нулів на початку дня та місяця"}
+{"id": 9, "raw_text": "Шум 12 . 04 . 2020", "field_type": "DATE", "expected_behavior": "Не вважати датою, якщо є зайві пробіли навколо крапок"}
+{"id": 10, "raw_text": "Купив 31.02.2022", "field_type": "DATE", "expected_behavior": "В ідеалі ігнорувати, але наш базовий regex пропустить (допустимий edge case для покращення)"}
+{"id": 11, "raw_text": "Ціна впала на 100%", "field_type": "AMOUNT", "expected_behavior": "Відсотки не є сумою грошей, ігнорувати"}
+{"id": 12, "raw_text": "Замовив 2 штуки на завтра", "field_type": "AMOUNT", "expected_behavior": "Кількість товару без валюти не вважати сумою"}
+{"id": 13, "raw_text": "Телефон має 64 Гб пам'яті", "field_type": "AMOUNT", "expected_behavior": "Одиниці виміру (Гб) не є валютою, ігнорувати"}
+{"id": 14, "raw_text": "Віддав 1,5 грн за пакет", "field_type": "AMOUNT", "expected_behavior": "Кома має парситись як крапка, результат 1.5 UAH"}
+{"id": 15, "raw_text": "Коштує 50 usd, дорого", "field_type": "AMOUNT", "expected_behavior": "Англомовні абревіатури (usd) нормалізувати до USD"}
+{"id": 16, "raw_text": "Ціна 100$", "field_type": "AMOUNT", "expected_behavior": "Розпізнати суму, якщо символ валюти приклеєний до числа"}
+{"id": 17, "raw_text": "Заплатив 500 гривень", "field_type": "AMOUNT", "expected_behavior": "Ігнорувати валюти, яких немає у нашому словнику"}
+{"id": 18, "raw_text": "Доставка 79 гр", "field_type": "AMOUNT", "expected_behavior": "Скорочення 'гр' розпізнати як гривні (UAH)"}
+{"id": 19, "raw_text": "Вага посилки 2.5 кг", "field_type": "AMOUNT", "expected_behavior": "Маса (кг) не є сумою, ігнорувати"}
+{"id": 20, "raw_text": "Ціна 3000 ₴", "field_type": "AMOUNT", "expected_behavior": "Символ гривні (₴) нормалізувати до UAH"}
+{"id": 21, "raw_text": "Купив київський торт", "field_type": "LOCATION", "expected_behavior": "Прикметники не вважати назвою міста, ігнорувати"}
+{"id": 22, "raw_text": "Доставка в Львівську область", "field_type": "LOCATION", "expected_behavior": "Область не є містом, витягувати тільки якщо є в словнику"}
+{"id": 23, "raw_text": "Забрав у києві", "field_type": "LOCATION", "expected_behavior": "Розпізнати місто, незважаючи на написання з малої літери"}
+{"id": 24, "raw_text": "Посилка приїхала до Львова", "field_type": "LOCATION", "expected_behavior": "Розпізнати місто у Родовому відмінку та нормалізувати до 'Львів'"}
+{"id": 25, "raw_text": "Живу на Харківщині", "field_type": "LOCATION", "expected_behavior": "Ігнорувати регіони та похідні слова"}
+{"id": 26, "raw_text": "Оператор Київстар не ловить", "field_type": "LOCATION", "expected_behavior": "Ігнорувати бренди, що містять назву міста як частину слова"}
+{"id": 27, "raw_text": "м.Київ, вулиця Хрещатик", "field_type": "LOCATION", "expected_behavior": "Правильно витягнути місто, незважаючи на приклеєну крапку"}
+{"id": 28, "raw_text": "Річка Дніпро дуже широка", "field_type": "LOCATION", "expected_behavior": "Допустиме хибне спрацювання: правило без контексту витягне 'Дніпро' як місто"}
+{"id": 29, "raw_text": "Вінниця - гарне місто", "field_type": "LOCATION", "expected_behavior": "Правильно розпізнати Називний відмінок"}
+{"id": 30, "raw_text": "З Одеси до Києва", "field_type": "LOCATION", "expected_behavior": "Витягнути відразу два міста з одного речення"}
