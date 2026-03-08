@@ -1,0 +1,60 @@
+{"text_id": 1, "text": "12.04.16 замовив кабель в Київ, віддав 499 грн.", "field_type": "DATE", "span_text": "12.04.16", "start_char": 0, "end_char": 8, "normalized_value": "2016-04-12"}
+{"text_id": 1, "text": "12.04.16 замовив кабель в Київ, віддав 499 грн.", "field_type": "LOCATION", "span_text": "Київ", "start_char": 26, "end_char": 30, "normalized_value": "Київ"}
+{"text_id": 1, "text": "12.04.16 замовив кабель в Київ, віддав 499 грн.", "field_type": "AMOUNT", "span_text": "499 грн", "start_char": 39, "end_char": 46, "normalized_value": "499.0 UAH"}
+{"text_id": 2, "text": "Ціна на сайті була 21841 грн. Доставка у Львів.", "field_type": "AMOUNT", "span_text": "21841 грн", "start_char": 19, "end_char": 28, "normalized_value": "21841.0 UAH"}
+{"text_id": 2, "text": "Ціна на сайті була 21841 грн. Доставка у Львів.", "field_type": "LOCATION", "span_text": "Львів", "start_char": 41, "end_char": 46, "normalized_value": "Львів"}
+{"text_id": 3, "text": "Купив 10.12.2017 за 79 гр. в Одесі.", "field_type": "DATE", "span_text": "10.12.2017", "start_char": 6, "end_char": 16, "normalized_value": "2017-12-10"}
+{"text_id": 3, "text": "Купив 10.12.2017 за 79 гр. в Одесі.", "field_type": "AMOUNT", "span_text": "79 гр", "start_char": 20, "end_char": 25, "normalized_value": "79.0 UAH"}
+{"text_id": 3, "text": "Купив 10.12.2017 за 79 гр. в Одесі.", "field_type": "LOCATION", "span_text": "Одесі", "start_char": 29, "end_char": 34, "normalized_value": "Одеса"}
+{"text_id": 4, "text": "Отримав 28 вересня 2019 у відділенні в Харкові", "field_type": "DATE", "span_text": "28 вересня 2019", "start_char": 8, "end_char": 23, "normalized_value": "2019-09-28"}
+{"text_id": 4, "text": "Отримав 28 вересня 2019 у відділенні в Харкові", "field_type": "LOCATION", "span_text": "Харкові", "start_char": 39, "end_char": 46, "normalized_value": "Харків"}
+{"text_id": 5, "text": "сума 100$, все окей, забрав у місті Дніпро", "field_type": "AMOUNT", "span_text": "100$", "start_char": 5, "end_char": 9, "normalized_value": "100.0 USD"}
+{"text_id": 5, "text": "сума 100$, все окей, забрав у місті Дніпро", "field_type": "LOCATION", "span_text": "Дніпро", "start_char": 36, "end_char": 42, "normalized_value": "Дніпро"}
+{"text_id": 6, "text": "Придбав товар 05.04.2022. Рекомендую магазин у Вінниці!", "field_type": "DATE", "span_text": "05.04.2022", "start_char": 14, "end_char": 24, "normalized_value": "2022-04-05"}
+{"text_id": 6, "text": "Придбав товар 05.04.2022. Рекомендую магазин у Вінниці!", "field_type": "LOCATION", "span_text": "Вінниці", "start_char": 47, "end_char": 54, "normalized_value": "Вінниця"}
+{"text_id": 7, "text": "Списали 1500.50 uah з картки. Їхало до Києва.", "field_type": "AMOUNT", "span_text": "1500.50 uah", "start_char": 8, "end_char": 19, "normalized_value": "1500.5 UAH"}
+{"text_id": 7, "text": "Списали 1500.50 uah з картки. Їхало до Києва.", "field_type": "LOCATION", "span_text": "Києва", "start_char": 39, "end_char": 44, "normalized_value": "Київ"}
+{"text_id": 8, "text": "Купував на подарунок 1 січня 2021 року, обійшлося в 3000 ₴.", "field_type": "DATE", "span_text": "1 січня 2021", "start_char": 21, "end_char": 33, "normalized_value": "2021-01-01"}
+{"text_id": 8, "text": "Купував на подарунок 1 січня 2021 року, обійшлося в 3000 ₴.", "field_type": "AMOUNT", "span_text": "3000 ₴", "start_char": 52, "end_char": 58, "normalized_value": "3000.0 UAH"}
+{"text_id": 9, "text": "Чомусь взяли 50 usd замість 45. Запоріжжя чекало довго.", "field_type": "AMOUNT", "span_text": "50 usd", "start_char": 13, "end_char": 19, "normalized_value": "50.0 USD"}
+{"text_id": 9, "text": "Чомусь взяли 50 usd замість 45. Запоріжжя чекало довго.", "field_type": "LOCATION", "span_text": "Запоріжжя", "start_char": 32, "end_char": 41, "normalized_value": "Запоріжжя"}
+{"text_id": 10, "text": "Дата покупки 03.11.23, вартість доставки 50 гр.", "field_type": "DATE", "span_text": "03.11.23", "start_char": 13, "end_char": 21, "normalized_value": "2023-11-03"}
+{"text_id": 10, "text": "Дата покупки 03.11.23, вартість доставки 50 гр.", "field_type": "AMOUNT", "span_text": "50 гр", "start_char": 41, "end_char": 46, "normalized_value": "50.0 UAH"}
+{"text_id": 11, "text": "Замовлення було зроблено у Львові ще 15.08.2020.", "field_type": "LOCATION", "span_text": "Львові", "start_char": 27, "end_char": 33, "normalized_value": "Львів"}
+{"text_id": 11, "text": "Замовлення було зроблено у Львові ще 15.08.2020.", "field_type": "DATE", "span_text": "15.08.2020", "start_char": 37, "end_char": 47, "normalized_value": "2020-08-15"}
+{"text_id": 12, "text": "Телевізор коштує 12000 грн, привезли в Одесу.", "field_type": "AMOUNT", "span_text": "12000 грн", "start_char": 17, "end_char": 26, "normalized_value": "12000.0 UAH"}
+{"text_id": 12, "text": "Телевізор коштує 12000 грн, привезли в Одесу.", "field_type": "LOCATION", "span_text": "Одесу", "start_char": 39, "end_char": 44, "normalized_value": "Одеса"}
+{"text_id": 13, "text": "Повернув товар 20 жовтня 2023, чекаю свої 400.99 грн.", "field_type": "DATE", "span_text": "20 жовтня 2023", "start_char": 15, "end_char": 29, "normalized_value": "2023-10-20"}
+{"text_id": 13, "text": "Повернув товар 20 жовтня 2023, чекаю свої 400.99 грн.", "field_type": "AMOUNT", "span_text": "400.99 грн", "start_char": 42, "end_char": 52, "normalized_value": "400.99 UAH"}
+{"text_id": 14, "text": "Найгірший сервіс у Дніпрі! Втратив 200 $.", "field_type": "LOCATION", "span_text": "Дніпрі", "start_char": 19, "end_char": 25, "normalized_value": "Дніпро"}
+{"text_id": 14, "text": "Найгірший сервіс у Дніпрі! Втратив 200 $.", "field_type": "AMOUNT", "span_text": "200 $", "start_char": 35, "end_char": 40, "normalized_value": "200.0 USD"}
+{"text_id": 15, "text": "Оплатив 14.02.19, сума 800 грн.", "field_type": "DATE", "span_text": "14.02.19", "start_char": 8, "end_char": 16, "normalized_value": "2019-02-14"}
+{"text_id": 15, "text": "Оплатив 14.02.19, сума 800 грн.", "field_type": "AMOUNT", "span_text": "800 грн", "start_char": 23, "end_char": 30, "normalized_value": "800.0 UAH"}
+{"text_id": 16, "text": "Оформлено 01.01.2024 в магазині міста Харків.", "field_type": "DATE", "span_text": "01.01.2024", "start_char": 10, "end_char": 20, "normalized_value": "2024-01-01"}
+{"text_id": 16, "text": "Оформлено 01.01.2024 в магазині міста Харків.", "field_type": "LOCATION", "span_text": "Харків", "start_char": 38, "end_char": 44, "normalized_value": "Харків"}
+{"text_id": 17, "text": "Ціна зросла з 1000 грн до 1500 грн за один день.", "field_type": "AMOUNT", "span_text": "1000 грн", "start_char": 14, "end_char": 22, "normalized_value": "1000.0 UAH"}
+{"text_id": 17, "text": "Ціна зросла з 1000 грн до 1500 грн за один день.", "field_type": "AMOUNT", "span_text": "1500 грн", "start_char": 26, "end_char": 34, "normalized_value": "1500.0 UAH"}
+{"text_id": 18, "text": "15.05.2018 отримав посилку в Києві.", "field_type": "DATE", "span_text": "15.05.2018", "start_char": 0, "end_char": 10, "normalized_value": "2018-05-15"}
+{"text_id": 18, "text": "15.05.2018 отримав посилку в Києві.", "field_type": "LOCATION", "span_text": "Києві", "start_char": 29, "end_char": 34, "normalized_value": "Київ"}
+{"text_id": 19, "text": "Доставка до Львова обійшлася у 75 ₴. Дрібниця.", "field_type": "LOCATION", "span_text": "Львова", "start_char": 12, "end_char": 18, "normalized_value": "Львів"}
+{"text_id": 19, "text": "Доставка до Львова обійшлася у 75 ₴. Дрібниця.", "field_type": "AMOUNT", "span_text": "75 ₴", "start_char": 31, "end_char": 35, "normalized_value": "75.0 UAH"}
+{"text_id": 20, "text": "Зробив замовлення на суму 250 usd.", "field_type": "AMOUNT", "span_text": "250 usd", "start_char": 26, "end_char": 33, "normalized_value": "250.0 USD"}
+{"text_id": 21, "text": "Купила 25 серпня 2021 за 10000 грн.", "field_type": "DATE", "span_text": "25 серпня 2021", "start_char": 7, "end_char": 21, "normalized_value": "2021-08-25"}
+{"text_id": 21, "text": "Купила 25 серпня 2021 за 10000 грн.", "field_type": "AMOUNT", "span_text": "10000 грн", "start_char": 25, "end_char": 34, "normalized_value": "10000.0 UAH"}
+{"text_id": 22, "text": "Забрав у Вінниці 30.12.2022.", "field_type": "LOCATION", "span_text": "Вінниці", "start_char": 9, "end_char": 16, "normalized_value": "Вінниця"}
+{"text_id": 22, "text": "Забрав у Вінниці 30.12.2022.", "field_type": "DATE", "span_text": "30.12.2022", "start_char": 17, "end_char": 27, "normalized_value": "2022-12-30"}
+{"text_id": 23, "text": "Витратив 350.25 грн на ці навушники в Одесі.", "field_type": "AMOUNT", "span_text": "350.25 грн", "start_char": 9, "end_char": 19, "normalized_value": "350.25 UAH"}
+{"text_id": 23, "text": "Витратив 350.25 грн на ці навушники в Одесі.", "field_type": "LOCATION", "span_text": "Одесі", "start_char": 38, "end_char": 43, "normalized_value": "Одеса"}
+{"text_id": 24, "text": "Замовляв 3 березня 2020, прийшло з браком.", "field_type": "DATE", "span_text": "3 березня 2020", "start_char": 9, "end_char": 23, "normalized_value": "2020-03-03"}
+{"text_id": 25, "text": "Повернули 500 грн на картку банку в Харкові.", "field_type": "AMOUNT", "span_text": "500 грн", "start_char": 10, "end_char": 17, "normalized_value": "500.0 UAH"}
+{"text_id": 25, "text": "Повернули 500 грн на картку банку в Харкові.", "field_type": "LOCATION", "span_text": "Харкові", "start_char": 36, "end_char": 43, "normalized_value": "Харків"}
+{"text_id": 26, "text": "22.02.2022 купив за 999 грн.", "field_type": "DATE", "span_text": "22.02.2022", "start_char": 0, "end_char": 10, "normalized_value": "2022-02-22"}
+{"text_id": 26, "text": "22.02.2022 купив за 999 грн.", "field_type": "AMOUNT", "span_text": "999 грн", "start_char": 20, "end_char": 27, "normalized_value": "999.0 UAH"}
+{"text_id": 27, "text": "Ціна 45 $, забирав самовивозом у Києві.", "field_type": "AMOUNT", "span_text": "45 $", "start_char": 5, "end_char": 9, "normalized_value": "45.0 USD"}
+{"text_id": 27, "text": "Ціна 45 $, забирав самовивозом у Києві.", "field_type": "LOCATION", "span_text": "Києві", "start_char": 33, "end_char": 38, "normalized_value": "Київ"}
+{"text_id": 28, "text": "Оформив 11.11.21, заплатив 1200 ₴.", "field_type": "DATE", "span_text": "11.11.21", "start_char": 8, "end_char": 16, "normalized_value": "2021-11-11"}
+{"text_id": 28, "text": "Оформив 11.11.21, заплатив 1200 ₴.", "field_type": "AMOUNT", "span_text": "1200 ₴", "start_char": 27, "end_char": 33, "normalized_value": "1200.0 UAH"}
+{"text_id": 29, "text": "Дата: 08.03.2019. Локація: Львів.", "field_type": "DATE", "span_text": "08.03.2019", "start_char": 6, "end_char": 16, "normalized_value": "2019-03-08"}
+{"text_id": 29, "text": "Дата: 08.03.2019. Локація: Львів.", "field_type": "LOCATION", "span_text": "Львів", "start_char": 27, "end_char": 32, "normalized_value": "Львів"}
+{"text_id": 30, "text": "Жахливий сервіс за 5000 грн у Запоріжжі.", "field_type": "AMOUNT", "span_text": "5000 грн", "start_char": 19, "end_char": 27, "normalized_value": "5000.0 UAH"}
+{"text_id": 30, "text": "Жахливий сервіс за 5000 грн у Запоріжжі.", "field_type": "LOCATION", "span_text": "Запоріжжі", "start_char": 30, "end_char": 39, "normalized_value": "Запоріжжя"}
