@@ -7,7 +7,7 @@
 {"id": 7, "raw_text": "Замовляв 5 Січня 2024", "field_type": "DATE", "expected_behavior": "Розпізнати текстовий місяць незалежно від регістру"}
 {"id": 8, "raw_text": "Приїде 1.2.2023", "field_type": "DATE", "expected_behavior": "Розпізнати дату без нулів на початку дня та місяця"}
 {"id": 9, "raw_text": "Шум 12 . 04 . 2020", "field_type": "DATE", "expected_behavior": "Не вважати датою, якщо є зайві пробіли навколо крапок"}
-{"id": 10, "raw_text": "Купив 31.02.2022", "field_type": "DATE", "expected_behavior": "В ідеалі ігнорувати, але наш базовий regex пропустить (допустимий edge case для покращення)"}
+{"id": 10, "raw_text": "Купив 31.02.2022", "field_type": "DATE", "expected_behavior": "Допустимий edge case для покращення"}
 {"id": 11, "raw_text": "Ціна впала на 100%", "field_type": "AMOUNT", "expected_behavior": "Відсотки не є сумою грошей, ігнорувати"}
 {"id": 12, "raw_text": "Замовив 2 штуки на завтра", "field_type": "AMOUNT", "expected_behavior": "Кількість товару без валюти не вважати сумою"}
 {"id": 13, "raw_text": "Телефон має 64 Гб пам'яті", "field_type": "AMOUNT", "expected_behavior": "Одиниці виміру (Гб) не є валютою, ігнорувати"}
