@@ -1,0 +1,12 @@
+{
+    "seed": 42,
+    "strategy": "stratified",
+    "target_column_for_stratification": "target",
+    "split_sizes": {
+        "train": 2427,
+        "val": 303,
+        "test": 304,
+        "total": 3034
+    },
+    "generation_time": "2026-03-13 09:56:21"
+}
