@@ -1,8 +1,9 @@
 import pandas as pd
+import matplotlib.pyplot as plt
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
-from sklearn.metrics import classification_report, accuracy_score, f1_score
+from sklearn.metrics import classification_report, accuracy_score, f1_score, confusion_matrix, ConfusionMatrixDisplay
 
 def build_and_train_pipeline(X_train, y_train):
     """
@@ -38,6 +39,18 @@ def evaluate_model(pipeline, X_test, y_test):
     print(classification_report(y_test, y_pred))
     
     return y_pred
+
+def plot_cm(y_true, y_pred, classes, title="Confusion Matrix"):
+    """
+    Будує та відображає матрицю плутанини.
+    """
+    cm = confusion_matrix(y_true, y_pred, labels=classes)
+    disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=classes)
+    
+    fig, ax = plt.subplots(figsize=(5, 4))
+    disp.plot(cmap=plt.cm.Blues, ax=ax, values_format='d')
+    plt.title(title)
+    plt.show()
 
 if __name__ == "__main__":
     print("Ініціалізація модуля classification_baseline.py...")
