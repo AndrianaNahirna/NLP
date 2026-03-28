@@ -5,7 +5,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
 from sklearn.metrics import classification_report, accuracy_score, f1_score, confusion_matrix, ConfusionMatrixDisplay
 
-def build_and_train_pipeline(X_train, y_train):
+def run_logreg_baseline(X_train, y_train):
     """
     Створює та навчає пайплайн для класифікації текстів.
     
@@ -40,7 +40,7 @@ def evaluate_model(pipeline, X_test, y_test):
     
     return y_pred
 
-def plot_cm(y_true, y_pred, classes, title="Confusion Matrix"):
+def plot_confusion_matrix(y_true, y_pred, classes, title="Confusion Matrix"):
     """
     Будує та відображає матрицю плутанини.
     """

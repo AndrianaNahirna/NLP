@@ -2,7 +2,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.svm import LinearSVC
 from sklearn.pipeline import Pipeline
 
-def build_svm_pipeline(X_train, y_train, analyzer="word", ngram_range=(1, 2), class_weight=None, C=1.0, min_df=1):
+def run_linear_svm(X_train, y_train, analyzer="word", ngram_range=(1, 2), class_weight=None, C=1.0, min_df=1):
     """
     Створює та навчає пайплайн TF-IDF + LinearSVC.
     """

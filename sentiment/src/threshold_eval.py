@@ -37,6 +37,6 @@ def evaluate_thresholds(y_true, y_scores, threshold, pos_label='negative'):
     neg_label = 'positive' if pos_label == 'negative' else 'negative'
     y_pred_labels = np.where(y_pred_binary == 1, pos_label, neg_label)
     
-    print(f"Classification Report (Threshold = {threshold:.3f}) ---")
+    print(f"Classification Report (Threshold = {threshold:.3f})")
     print(classification_report(y_true, y_pred_labels))
     return y_pred_labels
