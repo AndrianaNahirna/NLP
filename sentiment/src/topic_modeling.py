@@ -6,7 +6,7 @@ def run_lsa(corpus, custom_stop_words, n_components=5):
     tfidf_vectorizer = TfidfVectorizer(
         ngram_range=(1, 2), 
         min_df=5, 
-        max_df=0.9,
+        max_df=0.8,
         stop_words=custom_stop_words 
     )
     tfidf_matrix = tfidf_vectorizer.fit_transform(corpus)
@@ -19,7 +19,7 @@ def run_lda(corpus, custom_stop_words, n_components=5):
     count_vectorizer = CountVectorizer(
         ngram_range=(1, 1), 
         min_df=5, 
-        max_df=0.9,
+        max_df=0.8,
         stop_words=custom_stop_words
     )
     count_matrix = count_vectorizer.fit_transform(corpus)
