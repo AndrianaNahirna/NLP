@@ -1,5 +1,5 @@
 import spacy
-from src.ner_rules import add_hybrid_rules
+from .ner_rules import add_hybrid_rules
 
 def load_baseline_model(model_name="uk_core_news_sm"):
     """Завантажує базову модель spaCy."""
