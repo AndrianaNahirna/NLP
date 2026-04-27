@@ -1,80 +1,56 @@
-from src.llm_extract import generate_baseline_prompt
-from src.validator import validate_json
+from src.llm_extract import get_baseline_prompt, call_llm
+from src.validator import validate_extraction
 import json
 
-def generate_repair_prompt(original_text, broken_output, error_message, schema):
+def get_repair_prompt(broken_output, error_message, schema_str):
     """
-    Створює prompt для виправлення помилок у JSON.
+    Формує промпт для виправлення помилок у JSON.
     """
-    return f"""Ти отримав завдання витягти дані у JSON, але твій попередній результат містив синтаксичну помилку або не відповідав схемі.
-Виправ помилку і поверни ТІЛЬКИ валідний JSON. Нічого зайвого.
-
-Оригінальний текст:
-"{original_text}"
-
-Твій попередній (помилковий) вихід:
+    prompt = f"""
+Попередній результат витягування містить помилки і не відповідає схемі.
+Попередній вихід:
 {broken_output}
 
-Помилка валідації, яку тобі потрібно виправити:
+Помилка:
 {error_message}
 
-Вимоги JSON Schema:
-{json.dumps(schema, indent=2, ensure_ascii=False)}
-"""
+Будь ласка, виправ помилку та поверни валідний JSON згідно зі схемою:
+{schema_str}
 
-def run_extraction_with_repair(model, text, schema, max_attempts=2):
+Поверни ТІЛЬКИ виправлений JSON.
+"""
+    return prompt.strip()
+
+def run_extraction_pipeline(text, schema, max_repairs=2):
     """
-    Виконує екстракцію з підтримкою Repair Loop.
-    Повертає словник з усіма метриками та історією спроб.
+    Основний інженерний пайплайн: Extraction -> Validation -> (Repair Loop)
     """
-    # 1. Запускаємо baseline extraction
-    prompt = generate_baseline_prompt(text, schema)
-    try:
-        llm_output = model.generate_content(prompt).text
-    except Exception as e:
-        llm_output = str(e)
+    schema_str = json.dumps(schema, indent=2, ensure_ascii=False)
+    prompt = get_baseline_prompt(text, schema_str)
     
-    # Перевіряємо результат
-    is_json, is_schema, data, error = validate_json(llm_output, schema)
+    # Перша спроба
+    current_output = call_llm(prompt)
     
-    # Зберігаємо початкові метрики
-    metrics = {
-        "raw_valid_json": is_json,
-        "raw_valid_schema": is_schema,
-        "repairs_needed": 0,
-        "final_valid_schema": is_schema,
-        "final_data": data,
-        "history": [{"output": llm_output, "error": error}]
-    }
-    
-    # Якщо все валідно з першого разу — повертаємо результат
-    if is_schema:
-        return metrics
+    repairs_made = 0
+    while repairs_made <= max_repairs:
+        is_valid, data, error = validate_extraction(current_output, schema)
         
-    # 2. Repair Loop
-    current_output = llm_output
-    current_error = error
-    
-    for attempt in range(max_attempts):
-        metrics["repairs_needed"] += 1
+        if is_valid:
+            return {
+                "status": "success",
+                "data": data,
+                "repairs_needed": repairs_made,
+                "raw_output": current_output
+            }
         
-        # Формуємо repair prompt
-        repair_prompt = generate_repair_prompt(text, current_output, current_error, schema)
-        
-        try:
-            current_output = model.generate_content(repair_prompt).text
-        except Exception as e:
-            current_output = str(e)
-            
-        # Знову перевіряємо
-        is_json, is_schema, data, current_error = validate_json(current_output, schema)
-        
-        metrics["history"].append({"output": current_output, "error": current_error})
-        
-        # Якщо JSON став валідним - виходимо з циклу
-        if is_schema:
-            metrics["final_valid_schema"] = True
-            metrics["final_data"] = data
-            break
-            
-    return metrics
+        repairs_made += 1
+        if repairs_made <= max_repairs:
+            repair_prompt = get_repair_prompt(current_output, error, schema_str)
+            current_output = call_llm(repair_prompt)
+        else:
+            return {
+                "status": "fail",
+                "error": error,
+                "repairs_attempted": max_repairs,
+                "last_output": current_output
+            }

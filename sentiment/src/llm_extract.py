@@ -1,36 +1,55 @@
-import google.generativeai as genai
 import json
+import google.generativeai as genai
 
-def setup_llm(api_key, model_name="gemini-1.5-flash"):
-    """Ініціалізує та повертає модель Gemini."""
-    genai.configure(api_key=api_key)
-    return genai.GenerativeModel(model_name)
+API_KEY = "AIzaSyDiggjJfW8sTopQjqFGhlYKHR39xVi3iAA"
 
-def generate_baseline_prompt(text, schema):
+genai.configure(api_key=API_KEY)
+
+def get_baseline_prompt(text, schema_str):
     """
-    Створює базовий prompt для видобування даних.
+    Формує базовий промпт для extraction-задачі.
     """
-    return f"""Ти — інженер з видобування даних. Твоє завдання — витягти інформацію з наданого тексту та повернути її ВИНЯТКОВО у форматі валідного JSON.
+    prompt = f"""
+Витягни структуровану інформацію з наступного відгуку українською мовою.
+Використовуй наступну JSON схему для виходу:
+{schema_str}
+
+Текст відгуку:
+\"\"\"{text}\"\"\"
 
 Правила:
-1. Витягни інформацію чітко згідно з JSON Schema, наведеною нижче.
-2. Якщо певне значення відсутнє у тексті, використовуй `null`, як вказано у схемі.
-3. Не пиши жодного тексту до або після JSON (ніяких привітань, пояснень чи markdown-блоків). Тільки чистий JSON.
-
-JSON Schema:
-{json.dumps(schema, indent=2, ensure_ascii=False)}
-
-Текст для аналізу:
-"{text}"
+1. Поверни ТІЛЬКИ чистий JSON без блоків коду (```json ... ```).
+2. Не додавай жодних пояснень, привітань чи тексту до або після JSON.
+3. Якщо значення для поля відсутнє, використовуй null (крім масивів, де має бути порожній список []).
+4. Дотримуйся типів даних, вказаних у схемі.
 """
+    return prompt.strip()
 
-def extract_raw(model, text, schema):
+def call_llm(prompt):
     """
-    Виконує "сиру" екстракцію без repair loop.
+    Звертається до API Gemini для отримання результату.
     """
-    prompt = generate_baseline_prompt(text, schema)
     try:
-        response = model.generate_content(prompt)
-        return response.text
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        
+        response = model.generate_content(
+            prompt,
+            generation_config=genai.types.GenerationConfig(
+                temperature=0.0, 
+            )
+        )
+        
+        raw_text = response.text.strip()
+        
+        if raw_text.startswith("```json"):
+            raw_text = raw_text[7:]
+        if raw_text.startswith("```"):
+            raw_text = raw_text[3:]
+        if raw_text.endswith("```"):
+            raw_text = raw_text[:-3]
+            
+        return raw_text.strip()
+        
     except Exception as e:
-        return str(e)
+        print(f"Помилка API: {e}")
+        return f'{{"error": "API Error: {str(e)}"}'

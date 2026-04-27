@@ -1,32 +1,41 @@
-REVIEW_EXTRACTION_SCHEMA = {
+import json
+
+# Схема для витягування даних з відгуків
+EXTRACTION_SCHEMA = {
     "type": "object",
     "properties": {
-        "shop_name": {
-            "type": ["string", "null"],
-            "description": "Назва магазину (наприклад, Розетка, Цитрус). null якщо не вказано."
-        },
-        "product_name": {
-            "type": ["string", "null"],
-            "description": "Назва товару (наприклад, iPhone 13). null якщо не вказано."
-        },
-        "price": {
-            "type": ["number", "null"],
-            "description": "Ціна товару у вигляді числа без валюти. null якщо не вказано."
-        },
-        "sentiment": {
+        "sentiment_type": {
             "type": "string",
             "enum": ["positive", "negative", "neutral"],
-            "description": "Тональність відгуку."
+            "description": "Загальна тональність відгуку"
         },
-        "order_id": {
+        "mentioned_aspects": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Список аспектів продукту/послуги, що згадуються"
+        },
+        "advantages": {
             "type": ["string", "null"],
-            "description": "Номер замовлення, якщо він є у тексті. null якщо немає."
+            "description": "Конкретні переваги, згадані у тексті"
         },
-        "issue_reported": {
-            "type": "boolean",
-            "description": "true, якщо клієнт повідомляє про проблему (поломка, затримка тощо), інакше false."
+        "disadvantages": {
+            "type": ["string", "null"],
+            "description": "Конкретні недоліки, згадані у тексті"
+        },
+        "rating_mentioned": {
+            "type": ["number", "null"],
+            "description": "Числова оцінка, якщо вона явно або неявно вказана в тексті"
         }
     },
-    "required": ["shop_name", "sentiment", "issue_reported"],
+    "required": [
+        "sentiment_type",
+        "mentioned_aspects",
+        "advantages",
+        "disadvantages",
+        "rating_mentioned"
+    ],
     "additionalProperties": False
 }
+
+def get_schema_string():
+    return json.dumps(EXTRACTION_SCHEMA, indent=2, ensure_ascii=False)
