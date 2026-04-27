@@ -1,5 +1,5 @@
-from src.llm_extract import get_baseline_prompt, call_llm
-from src.validator import validate_extraction
+from .llm_extract import get_baseline_prompt, call_llm
+from .validator import validate_extraction
 import json
 
 def get_repair_prompt(broken_output, error_message, schema_str):
