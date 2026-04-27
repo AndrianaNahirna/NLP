@@ -1,23 +1,28 @@
-from .llm_extract import get_baseline_prompt, call_llm
-from .validator import validate_extraction
+from sentiment.src.llm_extract import get_baseline_prompt, call_llm
+from sentiment.src.validator import validate_extraction
 import json
 
-def get_repair_prompt(broken_output, error_message, schema_str):
+def get_repair_prompt(original_text, broken_output, error_message, schema_str):
     """
     Формує промпт для виправлення помилок у JSON.
     """
     prompt = f"""
-Попередній результат витягування містить помилки і не відповідає схемі.
-Попередній вихід:
+Ти намагався витягти дані з тексту, але згенерував невалідний JSON або порушив схему.
+
+Оригінальний текст відгуку:
+\"\"\"{original_text}\"\"\"
+
+Твій попередній (зламаний) вихід:
 {broken_output}
 
-Помилка:
+Системна помилка (що саме треба виправити):
 {error_message}
 
-Будь ласка, виправ помилку та поверни валідний JSON згідно зі схемою:
+Будь ласка, виправ цю помилку та поверни валідний JSON згідно зі схемою:
 {schema_str}
 
-Поверни ТІЛЬКИ виправлений JSON.
+КРИТИЧНЕ ПРАВИЛО: 
+Поверни ТІЛЬКИ виправлений JSON. Не пиши "Ось виправлений JSON", не додавай тегів форматування (```json). Починай одразу з {{ і закінчуй }}.
 """
     return prompt.strip()
 
@@ -45,7 +50,7 @@ def run_extraction_pipeline(text, schema, max_repairs=2):
         
         repairs_made += 1
         if repairs_made <= max_repairs:
-            repair_prompt = get_repair_prompt(current_output, error, schema_str)
+            repair_prompt = get_repair_prompt(text, current_output, error, schema_str)
             current_output = call_llm(repair_prompt)
         else:
             return {
