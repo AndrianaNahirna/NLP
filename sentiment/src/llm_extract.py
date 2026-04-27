@@ -52,4 +52,4 @@ def call_llm(prompt):
         
     except Exception as e:
         print(f"Помилка API: {e}")
-        return f'{{"error": "API Error: {str(e)}"}'
+        return f'{{"error": "API Error: {str(e)}"}}'
