@@ -1,55 +1,38 @@
-import json
-import google.generativeai as genai
+import torch
+from transformers import pipeline
 
-API_KEY = "AIzaSyDiggjJfW8sTopQjqFGhlYKHR39xVi3iAA"
+model_id = "unsloth/llama-3-8b-Instruct-bnb-4bit" 
 
-genai.configure(api_key=API_KEY)
-
-def get_baseline_prompt(text, schema_str):
-    """
-    Формує базовий промпт для extraction-задачі.
-    """
-    prompt = f"""
-Витягни структуровану інформацію з наступного відгуку українською мовою.
-Використовуй наступну JSON схему для виходу:
-{schema_str}
-
-Текст відгуку:
-\"\"\"{text}\"\"\"
-
-Правила:
-1. Поверни ТІЛЬКИ чистий JSON без блоків коду (```json ... ```).
-2. Не додавай жодних пояснень, привітань чи тексту до або після JSON.
-3. Якщо значення для поля відсутнє, використовуй null (крім масивів, де має бути порожній список []).
-4. Дотримуйся типів даних, вказаних у схемі.
-"""
-    return prompt.strip()
+pipe = pipeline(
+    "text-generation",
+    model=model_id,
+    model_kwargs={"torch_dtype": torch.bfloat16},
+    device_map="auto",
+)
 
 def call_llm(prompt):
-    """
-    Звертається до API Gemini для отримання результату.
-    """
-    try:
-        model = genai.GenerativeModel('gemini-2.5-flash-lite')
+    messages = [
+        {"role": "system", "content": "Ти — помічник, який повертає ТІЛЬКИ чистий JSON згідно зі схемою."},
+        {"role": "user", "content": prompt},
+    ]
+    
+    terminators = [
+        pipe.tokenizer.eos_token_id,
+        pipe.tokenizer.convert_tokens_to_ids("<|eot_id|>")
+    ]
+
+    outputs = pipe(
+        messages,
+        max_new_tokens=512,
+        eos_token_id=terminators,
+        do_sample=False,
+    )
+    
+    raw_text = outputs[0]["generated_text"][-1]["content"].strip()
+    
+    if "```json" in raw_text:
+        raw_text = raw_text.split("```json")[1].split("```")[0]
+    elif "```" in raw_text:
+        raw_text = raw_text.split("```")[1].split("```")[0]
         
-        response = model.generate_content(
-            prompt,
-            generation_config=genai.types.GenerationConfig(
-                temperature=0.0, 
-            )
-        )
-        
-        raw_text = response.text.strip()
-        
-        if raw_text.startswith("```json"):
-            raw_text = raw_text[7:]
-        if raw_text.startswith("```"):
-            raw_text = raw_text[3:]
-        if raw_text.endswith("```"):
-            raw_text = raw_text[:-3]
-            
-        return raw_text.strip()
-        
-    except Exception as e:
-        print(f"Помилка API: {e}")
-        return f'{{"error": "API Error: {str(e)}"}}'
+    return raw_text.strip()
