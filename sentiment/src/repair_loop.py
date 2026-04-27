@@ -18,6 +18,8 @@ def get_repair_prompt(original_text, broken_output, error_message, schema_str):
 Системна помилка (що саме треба виправити):
 {error_message}
 
+Підказка: Якщо помилка каже "is not of type 'string', 'null'", це означає, що ти повернув масив (список). Перетвори масив на єдиний текст (string), розділений комами.
+
 Будь ласка, виправ цю помилку та поверни валідний JSON згідно зі схемою:
 {schema_str}
 
