@@ -1,7 +1,7 @@
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
-from src.tools import classify_ticket, extract_entities, validate_required_fields
-from src.tool_logger import log_tool_call
+from .tools import classify_ticket, extract_entities, validate_required_fields
+from .tool_logger import log_tool_call
 
 # Завантаження моделі
 MODEL_ID = "unsloth/llama-3-8b-Instruct-bnb-4bit"
