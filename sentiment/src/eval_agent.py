@@ -1,4 +1,4 @@
-from src.agent import run_agent, run_baseline
+from .agent import run_agent, run_baseline
 
 def run_evaluation(TEST_CASES):
     print("Початок тестування")
