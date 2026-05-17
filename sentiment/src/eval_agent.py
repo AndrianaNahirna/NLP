@@ -16,6 +16,6 @@ def run_evaluation(TEST_CASES):
         print("\n[AGENT - З Tools]:")
         agent_answer = run_agent(case['id'], case['text'])
         print(agent_answer)
-        print("-" * 50)
+        print()
         
     print("\nТестування завершено. Логи збережено у docs/tool_logs_lab12.jsonl")
