@@ -19,9 +19,24 @@ def _generate_llm_response(prompt: str) -> str:
         {"role": "system", "content": "Ти - ввічливий агент служби підтримки. Відповідай українською коротко і по суті."},
         {"role": "user", "content": prompt}
     ]
-    input_ids = tokenizer.apply_chat_template(messages, add_generation_prompt=True, return_tensors="pt").to(model.device)
-    outputs = model.generate(input_ids, max_new_tokens=150, temperature=0.2, pad_token_id=tokenizer.eos_token_id)
-    return tokenizer.decode(outputs[0][input_ids.shape[-1]:], skip_special_tokens=True)
+    
+    inputs = tokenizer.apply_chat_template(
+        messages, 
+        add_generation_prompt=True, 
+        return_tensors="pt",
+        return_dict=True
+    ).to(model.device)
+    
+    outputs = model.generate(
+        **inputs, 
+        max_new_tokens=150, 
+        temperature=0.2, 
+        pad_token_id=tokenizer.eos_token_id
+    )
+    
+    prompt_length = inputs["input_ids"].shape[1]
+    
+    return tokenizer.decode(outputs[0][prompt_length:], skip_special_tokens=True)
 
 def run_baseline(user_text: str) -> str:
     """Варіант 1: LLM без tools (модель відповідає лише за промптом)."""
